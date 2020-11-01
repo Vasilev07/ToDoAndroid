@@ -1,4 +1,4 @@
-package com.example.todo;
+package com.example.todo.notes;
 
 import android.os.Bundle;
 

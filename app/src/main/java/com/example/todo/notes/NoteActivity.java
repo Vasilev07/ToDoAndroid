@@ -1,4 +1,4 @@
-package com.example.todo;
+package com.example.todo.notes;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +13,11 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+
+import com.example.todo.persistence.CourseInfo;
+import com.example.todo.persistence.DataManager;
+import com.example.todo.persistence.NoteInfo;
+import com.example.todo.R;
 
 import java.util.List;
 

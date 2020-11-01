@@ -1,4 +1,4 @@
-package com.example.todo;
+package com.example.todo.persistence;
 
 import java.util.ArrayList;
 import java.util.List;
