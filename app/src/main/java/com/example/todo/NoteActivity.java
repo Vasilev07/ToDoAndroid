@@ -3,8 +3,10 @@ package com.example.todo;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,9 +27,7 @@ public class NoteActivity extends AppCompatActivity {
     private EditText textNoteTitle;
     private int notePosition;
     private boolean isCancelling;
-    private String originalNoteCourseId;
-    private String originalText;
-    private String originalTitle;
+    private NoteActivityViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +35,16 @@ public class NoteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_note);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        ViewModelProvider viewModelProvider = new ViewModelProvider(getViewModelStore(),
+                ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()));
+        viewModel = viewModelProvider.get(NoteActivityViewModel.class);
+
+        if (viewModel.isNewlyCrated && savedInstanceState != null) {
+            viewModel.restoreState(savedInstanceState);
+        }
+
+        viewModel.isNewlyCrated = false;
 
         spinnerCourses = findViewById(R.id.spinner_courses);
 
@@ -60,9 +70,9 @@ public class NoteActivity extends AppCompatActivity {
             return;
         }
 
-        originalNoteCourseId = note.getCourse().getCourseId();
-        originalText = note.getText();
-        originalTitle = note.getTitle();
+        viewModel.originalNoteCourseId = note.getCourse().getCourseId();
+        viewModel.originalText = note.getText();
+        viewModel.originalTitle = note.getTitle();
     }
 
     private void displayNote(Spinner spinnerCourses, EditText textNoteTitle, EditText textNoteText) {
@@ -122,11 +132,20 @@ public class NoteActivity extends AppCompatActivity {
         saveNote();
     }
 
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (outState != null) {
+            viewModel.saveState(outState);
+        }
+    }
+
     private void storePreviousNoteValues() {
-        CourseInfo course = DataManager.getInstance().getCourse(originalNoteCourseId);
+        CourseInfo course = DataManager.getInstance().getCourse(viewModel.originalNoteCourseId);
         note.setCourse(course);
-        note.setText(originalText);
-        note.setTitle(originalTitle);
+        note.setText(viewModel.originalText);
+        note.setTitle(viewModel.originalTitle);
     }
 
     public void saveNote() {
